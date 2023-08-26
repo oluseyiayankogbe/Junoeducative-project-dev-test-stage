@@ -2,22 +2,27 @@ pipeline {
     agent any
 
     stages {
-        stage("checkout") {
+        stage("Checkout") {
             steps {
                 checkout scmGit(branches: [[name: '**']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/oluseyiayankogbe/junoeducative-project-dev-test-stage.git']])
             }
         }
-        stage("terraform init") {
+       
+        
+        stage('Deploy Dev') {
             steps {
-                sh ("terraform init")
+                script {
+                    dir('dev-environment') {
+                        // Deploy to the Dev environment using Terraform
+                        sh 'terraform init'
+                        echo "Terraform action is --> ${action}"
+                        sh ("terraform ${action} --auto-approve")
+                    }
+                }
             }
         }
-        stage("terraform action") {
-            steps {
-                echo "Terraform action is --> ${action}"
-                sh   ("terraform ${action} --auto-approve")
-            }
-        }    
+
+
     }
 
 }
